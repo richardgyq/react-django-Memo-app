@@ -133,7 +133,7 @@ STATIC_ROOT = BASE_DIR.joinpath('staticfiles')
 STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
-    BASE_DIR.joinpath('build/static')
+    BASE_DIR.joinpath('build', 'static')
 ]
 
 # Default primary key field type

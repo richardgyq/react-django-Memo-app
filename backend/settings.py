@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+import logging
 import os
 import django_heroku
 import dj_database_url
@@ -32,7 +33,9 @@ SECRET_KEY = ''
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1', 'mymemoweb.herokuapp.com']
+ALLOWED_HOSTS = ['localhost','127.0.0.1']
+if os.getenv('APP_HOST'):
+    ALLOWED_HOSTS.append(os.getenv('APP_HOST'))
 
 
 # Application definition
@@ -129,6 +132,10 @@ USE_TZ = True
 STATIC_ROOT = BASE_DIR.joinpath('staticfiles')
 STATIC_URL = 'static/'
 
+STATICFILES_DIRS = [
+    BASE_DIR.joinpath('build/static')
+]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
@@ -155,3 +162,19 @@ django_heroku.settings(locals())
 # So, we’ll use a hacky workaround to get dj_database_url to forget about SSL
 options = DATABASES['default'].get('OPTIONS', {})
 options.pop('sslmode', None)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
+        },
+    },
+}

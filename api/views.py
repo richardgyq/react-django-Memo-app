@@ -1,7 +1,10 @@
+import os
 from django.db import IntegrityError
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from django.http import JsonResponse
+from django.views import View
+from django.http import JsonResponse, HttpResponse, HttpResponseNotFound
+
 from rest_framework.parsers import JSONParser
 from rest_framework.authtoken.models import Token
 from rest_framework import generics, permissions
@@ -82,3 +85,15 @@ class UserLogin(generics.GenericAPIView):
         except:
             token = Token.objects.create(user=user)
         return JsonResponse({'token': str(token)}, status=200)
+
+
+class Assets(View):
+    
+    def get(self, _request, filename):
+        path = os.path.join(os.path.dirname(__file__), 'static', filename)
+
+        if os.path.isfile(path):
+            with open(path, 'rb') as file:
+                return HttpResponse(file.read(), content_type='application/javascript')
+        else:
+            return HttpResponseNotFound()
